@@ -14,9 +14,9 @@ import android.widget.ImageView;
 import android.view.View;
 import android.widget.Button;
 import android.util.Log;
-import java.io.InputStream;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import java.util.Timer;
+import java.util.TimerTask;
+import android.os.Handler;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
 {
@@ -29,6 +29,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private int mImageMax;
     private Uri[] uriImageList;
     private boolean mAutoFlg;        // スライドショーフラグ（ true : 実行中、false : 非実行）
+    private Timer timer;
+    private Handler handler = new Handler();
+    private int showTime = 2000;     // スライドショー表示時間の間隔 [msec]
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,8 +111,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         else if (v.getId() == R.id.btnAuto)
         {
-            if(mAutoFlg == false) {
+            if(mAutoFlg == false)
+            {
                 // スライドショーを開始する
+                timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        handler.post(new Runnable() {
+                            public void run() {
+                                if(mImageNum == mImageMax - 1)
+                                {
+                                    // 最後の画像の場合は先頭に戻る
+                                    mImageNum = 0;
+                                }
+                                else
+                                {
+                                    // 次の画像
+                                    mImageNum++;
+                                }
+                                ImageView imageVIew = (ImageView) findViewById(R.id.imageView);
+                                imageVIew.setImageURI(uriImageList[mImageNum]);
+                            }
+                        });
+                    }
+                }, 0, showTime);
 
                 // ボタン表示を変更する
                 btnAuto.setText("停止");
@@ -118,6 +144,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             else
             {
                 // スライドショーを停止する
+                timer.cancel();
+                timer = null;
 
                 // ボタン表示を変更する
                 btnAuto.setText("再生");
