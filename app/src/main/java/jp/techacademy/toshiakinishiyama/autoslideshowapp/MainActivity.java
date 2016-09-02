@@ -81,7 +81,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case PERMISSIONS_REQUEST_CODE:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
                 {
-                    // 許可された（特に何もしない）
+                    // 許可された
+                    getContentsInfo();
                 }
                 else
                 {
@@ -98,7 +99,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     // ボタンクリック
     @Override
-    public void onClick(View v) {
+    public void onClick(View v)
+    {
+        // 画像有無チェック
+        if(mImageMax == 0) {
+            MessageDialogNoImage();
+            return;
+        }
+
         if (v.getId() == R.id.btnNext)
         {
             // 次の画像を表示する
@@ -168,6 +176,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         );
 
         mImageMax = cursor.getCount();
+
+        // 画像有無のチェック
+        if(mImageMax == 0)
+        {
+            MessageDialogNoImage();
+            return;
+        }
+
         uriImageList = new Uri[mImageMax];
         int cnt = 0;
 
@@ -225,5 +241,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         ImageView imageVIew = (ImageView) findViewById(R.id.imageView);
         imageVIew.setImageURI(uriImageList[mImageNum]);
+    }
+
+    // エラーメッセージ表示（画像なし）
+    private void MessageDialogNoImage()
+    {
+        MessageDialog dialogFragment = MessageDialog.newInstance("エラー", "表示する画像存在しません。");
+        dialogFragment.show(getFragmentManager(), "dialog_fragment");
     }
 }
