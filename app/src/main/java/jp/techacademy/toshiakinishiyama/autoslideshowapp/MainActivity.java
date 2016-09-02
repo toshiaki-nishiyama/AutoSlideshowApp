@@ -130,6 +130,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     // 次の画像
                                     mImageNum++;
                                 }
+                                // 画像を表示する
                                 ImageView imageVIew = (ImageView) findViewById(R.id.imageView);
                                 imageVIew.setImageURI(uriImageList[mImageNum]);
                             }
